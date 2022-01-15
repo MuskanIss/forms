@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do List</title>
+  </head>
+  <body>
+    <form>
+      <div>
+        <label for="title">Title</label>
+        <input type="text" title="title" />
+      </div>
+      <input style="margin: 20px" type="submit" />
+    </form>
+    <div id="list">
+      <h2>Your Todo List</h2>
+    </div>
+  </body>
+  <script>
+    var todo = [];
+    var idArr = 0;
+    if (localStorage.getItem("idArr") != null) {
+      idArr = localStorage.getItem("idArr");
+    }
+    add();
+    var form = document.querySelector("form");
+    form.addEventListener("submit", onSubmit);
+    function onSubmit(event) {
+      event.preventDefault();
+      var e = event.target;
+      for (var i = 0; i < e.length; i++) {
+        if (e[i].title === "title") {
+          if (localStorage.getItem("todod") !== null) {
+            todo = JSON.parse(localStorage.getItem("todod"));
+          }
+          todo.push({
+            title: e[i].value,
+            status: false,
+            id: idArr,
+          });
+          localStorage.setItem("todod", JSON.stringify(todo));
+        }
+      }
+      idArr++;
+      localStorage.setItem("idArr", idArr);
+      add();
+    }
+    function add() {
+      var list = document.getElementById("list");
+      list.innerHTML = null;
+      if (localStorage.getItem("todod") !== null) {
+        todo = JSON.parse(localStorage.getItem("todod"));
+        for (var i = 0; i < todo.length; i++) {
+          var list = document.getElementById("list");
+          var listItem = document.createElement("div");
+          var ItemTitle = document.createElement("h3");
+          var checkbox = document.createElement("input");
+          var deleteList = document.createElement("button");
+          listItem.num = todo[i].id;
+          listItem.style.display = "flex";
+          listItem.style.justifyContent = "space-around";
+          listItem.style.border = "1px solid black";
+          listItem.style.padding = "10px";
+          ItemTitle.textContent = todo[i].title;
+          checkbox.setAttribute("type", "checkbox");
+          checkbox.checked = todo[i].status;
+          checkbox.addEventListener("change", listdone);
+          ItemTitle.style.margin = "0px";
+          ItemTitle.id = "title";
+          ItemTitle.style.width = "60%";
+          deleteList.addEventListener("click", deleteItem);
+          deleteList.textContent = "Delete";
+          list.appendChild(listItem);
+          listItem.append(checkbox, ItemTitle, deleteList);
+          if (todo[i].status === true) {
+            ItemTitle.style.textDecoration = "line-through";
+            ItemTitle.style.color = "#13cd13";
+          }
+        }
+      }
+    }
+    function listdone() {
+      if (localStorage.getItem("todod") !== null) {
+        todo = JSON.parse(localStorage.getItem("todod"));
+        for (var i = 0; i < todo.length; i++) {
+          if (this.parentNode.num === todo[i].id) {
+            if (this.checked) {
+              todo[i].status = true;
+              this.parentNode.querySelector("#title").style.textDecoration =
+                "line-through";
+              this.parentNode.querySelector("#title").style.color = "#13cd13";
+            } else {
+              this.parentNode.querySelector("#title").style.textDecoration =
+                "none";
+              this.parentNode.querySelector("#title").style.color = "black";
+              todo[i].status = false;
+            }
+            localStorage.setItem("todod", JSON.stringify(todo));
+            break;
+          }
+        }
+      }
+    }
+    function deleteItem() {
+      if (localStorage.getItem("todod") !== null) {
+        todo = JSON.parse(localStorage.getItem("todod"));
+        var arr = [];
+        for (var i = 0; i < todo.length; i++) {
+          if (this.parentNode.num !== todo[i].id) {
+            arr.push(todo[i]);
+          }
+        }
+        localStorage.setItem("todod", JSON.stringify(arr));
+        add();
+      }
+    }
+  </script>
+</html>
